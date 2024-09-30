@@ -5,9 +5,12 @@ const conn = require("../config/db");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const { privateKey } = require("../Authentication/jwt");
-const fs = require("fs");
+// const fs = require("fs");
 const qs = require('qs');
 const axios = require('axios');
+const path = require('path');
+const fs = require('fs');
+const fs2 = require('fs').promises;
 
 const Register = async (req, res) => {
   try {
@@ -56,6 +59,8 @@ const Register = async (req, res) => {
       "<<panPhoto>>",
       sql.escape(file.path)
     );
+
+    console.log(registerQuery);
 
     conn.query(registerQuery, (err, result) => {
       if (err) {
@@ -155,7 +160,12 @@ const CreateReceipt = (req, res) => {
       const buffer = Buffer.from(base64Data, "base64");
       const filename = Date.now() + "_receipt.png";
 
-      fs.writeFile("uploads/dheri_photo/" + filename, buffer, (err) => {
+      if (!fs.existsSync(`uploads/dheri_photo/${user_id}`)) {
+        fs.mkdirSync(`uploads/dheri_photo/${user_id}`, { recursive: true });
+        console.log('Folder created successfully.');
+      }
+
+      fs.writeFile(`uploads/dheri_photo/${user_id}/` + filename, buffer, (err) => {
         if (err) {
           console.error("Error saving file:", err);
           return res.status(500).json({ error: "Error saving file" });
@@ -204,7 +214,7 @@ const CreateReceipt = (req, res) => {
       );
       createReceiptQuery = createReceiptQuery.replace(
         "<<photo_path>>",
-        sql.escape("uploads/dheri_photo/" + filename)
+        sql.escape(`uploads/dheri_photo/${user_id}/` + filename)
       );
       createReceiptQuery = createReceiptQuery.replace(
         "<<parchi_no>>",
@@ -267,6 +277,38 @@ const PurchaseBook=(req,res)=>{
     res.status(500).send("Internal Server Error");
   }
 }
+
+const ShowParchi = async (req, res) => {
+  try {
+    const { photo_path } = req.body;
+
+  
+    if (!photo_path) {
+      return res.status(400).json({ error: "Photo path is required." });
+    }
+
+    console.log(photo_path);
+
+    
+    const imagePath = path.join('./', photo_path);
+    console.log("Image Path:", imagePath); // Log the image path for debugging
+
+    // Read the image file asynchronously
+    const imageBuffer = await fs2.readFile(imagePath);
+    const base64Image = imageBuffer.toString('base64');
+
+    res.status(200).json({
+      data: base64Image,
+    });
+  } catch (error) {
+    console.error(error);
+    // Check if error is due to file not found
+    if (error.code === 'ENOENT') {
+      return res.status(404).send("File not found");
+    }
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 const ProfieInfo=(req,res)=>{
   try {
@@ -332,4 +374,4 @@ const SentPdf = async (req, res) => {
   }
 };
 
-module.exports = { Register, Login, CreateReceipt,PurchaseBook, ProfieInfo, SentPdf };
+module.exports = { Register, Login, CreateReceipt,PurchaseBook, ProfieInfo, SentPdf, ShowParchi };
