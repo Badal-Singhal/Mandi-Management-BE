@@ -68,7 +68,7 @@ const Register = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
       } else {
         res.status(200).json({
-          message: "Success",
+          message: "Register Successfully",
           data: {
             userName,
             password,
