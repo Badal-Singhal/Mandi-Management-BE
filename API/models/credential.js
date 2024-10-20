@@ -101,8 +101,8 @@ const Login = (req, res) => {
         console.error("Error:", error);
         res.status(500).json({ error: "Internal server error" });
       } else {
-        if (result.length > 0) {
-          bcrypt.compare(password, result[0].password, (err, resu) => {
+        if (result.rowCount > 0) {
+          bcrypt.compare(password, result.rows[0].password, (err, resu) => {
             if (err) {
               console.error("Error:", err);
               res.status(500).json({ error: "Internal server error" });
@@ -113,7 +113,7 @@ const Login = (req, res) => {
                 message: "Login Successfully",
                 data: {
                   token,
-                  user_id: result[0].user_id,
+                  user_id: result.rows[0].user_id,
                 },
                 resu,
               });
@@ -267,7 +267,7 @@ const PurchaseBook=(req,res)=>{
         res.status(500).json({ error: "Internal server error" });
       }else{
         res.status(200).json({
-          data: result
+          data: result.rows
         });
       }
     })
@@ -325,7 +325,7 @@ const ProfieInfo=(req,res)=>{
         res.status(500).json({ error: "Internal server error" });
       }else{
         res.status(200).json({
-          data: result
+          data: result.rows
         });
       }
     })
