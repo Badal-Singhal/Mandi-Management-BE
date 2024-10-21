@@ -8,6 +8,8 @@ VALUES (<<user_id>>,<<firmName>>,<<dheri>>,<<rate>>,<<lab>>,<<amount>>, <<finalR
 
 let purchaseBookQuery=`Select * from master_data_receipt where user_id=<<user_id>>`;
 
-let profieInfo=`Select "firmName", "firmAddress", "mobileNumber","gstNumber","panNumber","panPhoto","userName" from master_data_user where user_id=<<user_id>>`
+let profieInfo=`Select "firmName", "firmAddress", "mobileNumber","gstNumber","panNumber","panPhoto","userName" from master_data_user where user_id=<<user_id>>`;
 
-module.exports={register,login,createReceipt,purchaseBookQuery,profieInfo};
+let checkGstNumberQuery=`Select * from master_data_user where "gstNumber"=<<gstNumber>>`;
+
+module.exports={register,login,createReceipt,purchaseBookQuery,profieInfo,checkGstNumberQuery};

@@ -88,6 +88,35 @@ const Register = async (req, res) => {
   }
 };
 
+const CheckGstNumber = (req,res) =>{
+  try {
+    let {gstNumber}=req.body;
+    console.log(gstNumber);
+    let checkGstNumberQuery=queries.checkGstNumberQuery;
+    checkGstNumberQuery=checkGstNumberQuery.replace("<<gstNumber>>", sql.escape(gstNumber));
+    console.log(checkGstNumberQuery);
+    conn.query(checkGstNumberQuery,(error,result)=>{
+      if(error){
+        console.error("Error:",error);
+        res.status(500).json({ error: "Internal server error" });
+      }else{
+        if (result.rowCount > 0){
+          res.status(200).json({
+            message: "Validated"
+          });
+        }else{
+          res.status(200).json({
+            message: "Firm Account Not Exist"
+          });
+        }
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 const Login = (req, res) => {
   try {
     let { userName, password } = req.body;
@@ -374,4 +403,4 @@ const SentPdf = async (req, res) => {
   }
 };
 
-module.exports = { Register, Login, CreateReceipt,PurchaseBook, ProfieInfo, SentPdf, ShowParchi };
+module.exports = { Register, Login, CreateReceipt,PurchaseBook, ProfieInfo, SentPdf, ShowParchi, CheckGstNumber };
