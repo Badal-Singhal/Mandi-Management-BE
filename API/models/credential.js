@@ -137,12 +137,11 @@ const Login = (req, res) => {
               res.status(500).json({ error: "Internal server error" });
             }
             if (resu === true) {
-              var token = jwt.sign(userName, privateKey);
+              var token = jwt.sign({user_id: result.rows[0].user_id}, privateKey);
               res.status(200).json({
                 message: "Login Successfully",
                 data: {
-                  token,
-                  user_id: result.rows[0].user_id,
+                  token
                 },
                 resu,
               });
@@ -182,6 +181,9 @@ const CreateReceipt = (req, res) => {
         weight,
         remarks,
         photo,
+        latitude,
+        longitude,
+        location
       } = val;
 
       const base64Data = photo.replace(/^data:image\/\w+;base64,/, "");
@@ -249,7 +251,18 @@ const CreateReceipt = (req, res) => {
         "<<parchi_no>>",
         sql.escape(parchi_no)
       );
-
+      createReceiptQuery = createReceiptQuery.replace(
+        "<<latitude>>",
+        sql.escape(latitude)
+      );
+      createReceiptQuery = createReceiptQuery.replace(
+        "<<longitude>>",
+        sql.escape(longitude)
+      );
+      createReceiptQuery = createReceiptQuery.replace(
+        "<<location>>",
+        sql.escape(location)
+      );
       console.log(createReceiptQuery);
 
       // Execute SQL query

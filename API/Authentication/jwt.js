@@ -14,6 +14,8 @@ const Authenticate = (req, res,next) => {
         });
       }
       if (decoded) {
+        const user_id=decoded.user_id;
+        req.body['user_id']=user_id;
         next();
       }
     });

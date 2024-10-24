@@ -9,12 +9,14 @@ const upload=multer();
 
 const pan_card_photo = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log("Hellloooooooo");
     cb(null, "./uploads/pan_card");
   },
   filename: function (req, file, cb) {
     
     const prefix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     let pan_path=prefix + "_" + file.originalname;
+    console.log(pan_path);
     cb(null, pan_path);
   },
 });
